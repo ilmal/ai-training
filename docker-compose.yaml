@@ -1,0 +1,11 @@
+version: '3'
+services:
+  tensorflow-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    runtime: nvidia
+    volumes:
+      - ./src:/app
+    working_dir: /app
+    command: ["python3", "main.py"]
