@@ -36,7 +36,8 @@ class Main:
         self.model = get_model()
 
     def get_cache_path(self, BATCH_SIZE, type):
-        base_folder = "./data/batchsomething/"
+        return
+        base_folder = "./data/cache/"
         caches = os.listdir(base_folder)
         for cache in caches:
             if str(BATCH_SIZE) in cache:
@@ -61,9 +62,9 @@ class Main:
             val_generator_dataset = tf.data.Dataset.from_generator(dum_gen,output_signature=output_signature)
             generator_dataset = tf.data.Dataset.from_generator(dum_gen,output_signature=output_signature)
         
-        val_generator_dataset = val_generator_dataset.cache(VAL_CACHE_PATH + "tf_cache.tfcache").shuffle(100)
+        # self.val_generator_dataset = val_generator_dataset.cache(VAL_CACHE_PATH + "tf_cache.tfcache").shuffle(100)
 
-        self.generator_dataset = generator_dataset.cache(CACHE_PATH + "tf_cache.tfcache").shuffle(100)
+        # self.generator_dataset = generator_dataset.cache(CACHE_PATH + "tf_cache.tfcache").shuffle(100)
 
         self.generator_dataset = generator_dataset.prefetch(tf.data.AUTOTUNE)
 
@@ -99,7 +100,7 @@ BATCH_SIZE = 1000
 CHECKPOINT_PATH = "checkpoints/"
 
 # runtime = Main(val_data_list, data_list, val_data_dir, data_dir, BATCH_SIZE, CHECKPOINT_PATH)
-runtime = Main(_,_,_,_,BATCH_SIZE, CHECKPOINT_PATH)
+runtime = Main(BATCH_SIZE=BATCH_SIZE, CHECKPOINT_PATH=CHECKPOINT_PATH)
 runtime.get_model()
 runtime.get_data()
 runtime.callbacks()
