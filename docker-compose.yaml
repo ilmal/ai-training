@@ -1,3 +1,5 @@
+# sudo docker run -it --device=/dev/dri --device=/dev/kfd rocm/tensorflow:latest
+
 version: '3'
 services:
   tensorflow-app:
@@ -6,11 +8,12 @@ services:
       dockerfile: Dockerfile
     volumes:
       - ./src:/app
+      - ./models:/models
+      - ./results:/results
+      - /mnt/AI_new/cache_back/_100batch:/data
+    devices:
+      - /dev/dri
+      - /dev/kfd
     working_dir: /app
-    command: ["python3", "main.py"]
-
-
-
-
-
-
+    command: [ "python3", "main.py" ]
+    # command: [ "sleep", "60000000" ]

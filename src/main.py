@@ -1,5 +1,8 @@
 import os
+os.environ['TF_CPP_MAX_VLOG_LEVEL'] = "-1"
+
 import tensorflow as tf
+from IPython.display import clear_output
 
 # Module imports
 from modules.data_generator import data_generator
@@ -16,6 +19,33 @@ Plan:
 -- profit :)
 
 """
+
+# check for GPU
+print("\n")
+gpus = tf.config.list_physical_devices('GPU')
+if len(gpus) > 0:
+    for gpu in gpus:
+        print("Name:", gpu.name, "  Type:", gpu.device_type)
+
+        tf.config.experimental.set_memory_growth(gpu, True)
+else:
+    print("No GPU found on device")
+print("\n")
+
+
+class CustomCallback(tf.keras.callbacks.Callback):
+    # https://www.tensorflow.org/guide/keras/writing_your_own_callbacks#a_basic_example
+
+    def on_train_begin(self, logs=None):
+        keys = list(logs.keys())
+        print("Starting training; got log keys: {}".format(keys))
+
+    def on_train_batch_end(self, batch, logs=None):
+        keys = list(logs.keys())
+        if batch % 10 == 0:
+            # print(f"Batch {batch}/{self.params['steps']} - {logs}",flush=True, end="\n")
+            pass
+
 
 
 
@@ -35,13 +65,12 @@ class Main:
     def get_model(self):
         self.model = get_model()
 
-    def get_cache_path(self, BATCH_SIZE, type):
-        return
-        base_folder = "./data/cache/"
+    def get_cache_path(self, BATCH_SIZE, cahe_type):
+        base_folder = "/data/"
         caches = os.listdir(base_folder)
         for cache in caches:
-            if str(BATCH_SIZE) in cache:
-                return f"{base_folder}{type}"
+            if cahe_type in cache: return base_folder + cache
+
 
     def get_data(self):
         output_signature=(
@@ -61,15 +90,17 @@ class Main:
             dum_gen = lambda : None 
             val_generator_dataset = tf.data.Dataset.from_generator(dum_gen,output_signature=output_signature)
             generator_dataset = tf.data.Dataset.from_generator(dum_gen,output_signature=output_signature)
-        
-        # self.val_generator_dataset = val_generator_dataset.cache(VAL_CACHE_PATH + "tf_cache.tfcache").shuffle(100)
 
-        # self.generator_dataset = generator_dataset.cache(CACHE_PATH + "tf_cache.tfcache").shuffle(100)
+        self.val_generator_dataset = val_generator_dataset.cache(self.VAL_CACHE_PATH + "/tf_cache.tfcache").shuffle(100)
 
-        self.generator_dataset = generator_dataset.prefetch(tf.data.AUTOTUNE)
+        self.generator_dataset = generator_dataset.cache(self.CACHE_PATH + "/tf_cache.tfcache").shuffle(100)
+
+        # self.generator_dataset = generator_dataset.prefetch(tf.data.AUTOTUNE)
+        # self.val_generator_dataset = val_generator_dataset.prefetch(tf.data.AUTOTUNE)
 
     def callbacks(self, SAVE_INTERVAL = 2, LOGS_DIR = "data/logs"):
-        steps_per_epoch = len(self.data_list)
+        # steps_per_epoch = len(self.data_list)
+        steps_per_epoch = 10000
     
         self.model_checkpoint_callback = tf.keras.callbacks.ModelCheckpoint(
            filepath=CHECKPOINT_PATH,
@@ -82,9 +113,27 @@ class Main:
             write_steps_per_second=True
         )
 
-    def train():
+    def train(self):
         self.model.summary()
-        pass
+
+        self.model.fit(self.generator_dataset,
+                validation_data=self.val_generator_dataset,
+                epochs=10,
+                callbacks=[
+                    self.tensorboard_callback, 
+                    self.model_checkpoint_callback, 
+                    CustomCallback(),    
+                ],
+                initial_epoch=0,
+                verbose=1,
+                
+        )
+        print("saving model")
+        # self.model.save("./saved_model_new/model")
+
+
+
+
 
 # val_data_list = os.listdir("/mnt/external/app/AI-project/get_training_data_app/dev/output_val/labels/")
 # data_list = os.listdir("/mnt/external/app/AI-project/get_training_data_app/dev/output_train/labels/")
@@ -92,10 +141,7 @@ class Main:
 # val_data_dir = "/mnt/external/app/AI-project/get_training_data_app/dev/output_val/"
 # data_dir = "/mnt/external/app/AI-project/get_training_data_app/dev/output_train/"
 
-CACHE_PATH = "./cache/"
-VAL_CACHE_PATH = "./cache_val/"
-
-BATCH_SIZE = 1000
+BATCH_SIZE = 10
 
 CHECKPOINT_PATH = "checkpoints/"
 
