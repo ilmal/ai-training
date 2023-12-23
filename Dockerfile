@@ -1,5 +1,3 @@
-# sudo docker run -it --device=/dev/dri --device=/dev/kfd rocm/tensorflow:latest
-
 FROM rocm/tensorflow:latest
 
 # Set the working directory
