@@ -58,7 +58,7 @@ def get_model():
 
     model_function = import_function(f"model_{difference[0]}.py", "model")
 
-    return model_function()
+    return difference[0], model_function()
 
     
 

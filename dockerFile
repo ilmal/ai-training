@@ -1,15 +1,10 @@
-# Use the official NVIDIA CUDA base image with Ubuntu
-FROM nvidia/cuda:12.2.0-base-ubuntu22.04
-
-# Install necessary packages
-RUN apt-get update && \
-    apt-get install -y python3 python3-pip
-
-# Install TensorFlow GPU
-RUN pip3 install tensorflow
+FROM rocm/tensorflow:latest
 
 # Set the working directory
 WORKDIR /app
 
 # Copy your TensorFlow application files to the container
 COPY . /app
+
+# install pip3 dependencies
+RUN python3 -m pip install -r requirements.txt

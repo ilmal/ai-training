@@ -13,5 +13,16 @@ services:
       - /dev/dri
       - /dev/kfd
     working_dir: /app
-    command: [ "python3", "main.py" ]
-    # command: [ "sleep", "60000000" ]
+    command: [ "python3", "train_neuralnet.py" ]
+  tensorflow-app_no_gpu:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - ./src:/app
+      - ./models:/models
+      - ./results:/results
+      - ./data:/data
+    working_dir: /app
+    command: [ "python3", "train_neuralnet.py" ]
+  

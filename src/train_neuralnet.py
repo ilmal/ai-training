@@ -7,7 +7,7 @@ from IPython.display import clear_output
 # Module imports
 from modules.data_generator import data_generator
 from modules.get_model import get_model
-from modules.custom_callbacks import CustomCallback
+from modules.custom_callback import CustomCallback
 # from modules.training import ...
 
 """
@@ -48,7 +48,7 @@ class Train_neuralnet:
     
 
     def get_model(self):
-        self.model = get_model()
+        self.model_value, self.model = get_model()
 
     def get_cache_path(self, BATCH_SIZE, cahe_type):
         base_folder = "/data/"
@@ -76,6 +76,14 @@ class Train_neuralnet:
             val_generator_dataset = tf.data.Dataset.from_generator(dum_gen,output_signature=output_signature)
             generator_dataset = tf.data.Dataset.from_generator(dum_gen,output_signature=output_signature)
 
+        print("VAL_CACHE_PATH", self.VAL_CACHE_PATH)
+        print("TRAIN_CACHE_PATH", self.CACHE_PATH)
+        print(os.listdir(self.CACHE_PATH))
+
+        for i, e in enumerate(val_generator_dataset):
+            if i > 3: break
+            print(e)
+
         self.val_generator_dataset = val_generator_dataset.cache(self.VAL_CACHE_PATH + "/tf_cache.tfcache").shuffle(100)
 
         self.generator_dataset = generator_dataset.cache(self.CACHE_PATH + "/tf_cache.tfcache").shuffle(100)
@@ -87,16 +95,16 @@ class Train_neuralnet:
         # steps_per_epoch = len(self.data_list)
         steps_per_epoch = 10000
     
-        # self.model_checkpoint_callback = tf.keras.callbacks.ModelCheckpoint(
-        #    filepath=CHECKPOINT_PATH,
-        #    save_weights_only=False,
-        #    save_freq=int(steps_per_epoch * SAVE_INTERVAL))
+        self.model_checkpoint_callback = tf.keras.callbacks.ModelCheckpoint(
+           filepath=CHECKPOINT_PATH,
+           save_weights_only=False,
+           save_freq=int(steps_per_epoch * SAVE_INTERVAL))
 
-        # self.tensorboard_callback = tf.keras.callbacks.TensorBoard( 
-        #     log_dir=(LOGS_DIR),
-        #     histogram_freq=1, 
-        #     write_steps_per_second=True
-        # )
+        self.tensorboard_callback = tf.keras.callbacks.TensorBoard( 
+            log_dir=(LOGS_DIR),
+            histogram_freq=1, 
+            write_steps_per_second=True
+        )
 
     def train(self):
         self.model.summary()
@@ -107,7 +115,7 @@ class Train_neuralnet:
                 callbacks=[
                     self.tensorboard_callback, 
                     self.model_checkpoint_callback, 
-                    CustomCallback(),    
+                    CustomCallback(self.model_value),    
                 ],
                 initial_epoch=0,
                 verbose=1,
@@ -123,7 +131,7 @@ if __name__ == "__main__":
     CHECKPOINT_PATH = "checkpoints/"
 
     # runtime = Main(val_data_list, data_list, val_data_dir, data_dir, BATCH_SIZE, CHECKPOINT_PATH)
-    runtime = Main(BATCH_SIZE=BATCH_SIZE, CHECKPOINT_PATH=CHECKPOINT_PATH)
+    runtime = Train_neuralnet(BATCH_SIZE=BATCH_SIZE, CHECKPOINT_PATH=CHECKPOINT_PATH)
     runtime.get_model()
     runtime.get_data()
     runtime.callbacks()
