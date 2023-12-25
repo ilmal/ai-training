@@ -34,8 +34,19 @@ else:
 print("\n")
 
 class Train_neuralnet:
-    def __init__(self, val_data_list=False, data_list=False, val_data_dir=False, data_dir=False, BATCH_SIZE=False, CHECKPOINT_PATH=False):
-        if not BATCH_SIZE or not CHECKPOINT_PATH:
+    def __init__(self, 
+                 val_data_list=False, 
+                 data_list=False, 
+                 val_data_dir=False, 
+                 data_dir=False, 
+                 BATCH_SIZE=False, 
+                 CHECKPOINT_PATH=False, 
+                 LOGS_DIR=False,
+                 MODEL_SAVE_PATH=False,
+                 MODEL_LOGS_SAVE_PATH=False,
+
+        ):
+        if not BATCH_SIZE or not CHECKPOINT_PATH or not LOGS_DIR:
             raise Exception("BATCH_SIZE or CHECKPOINT_PATH not set")
         self.data_list = data_list
         self.val_data_list = val_data_list
@@ -45,6 +56,9 @@ class Train_neuralnet:
         self.CACHE_PATH = self.get_cache_path(BATCH_SIZE, "train")
         self.VAL_CACHE_PATH = self.get_cache_path(BATCH_SIZE, "val")
         self.CHECKPOINT_PATH = CHECKPOINT_PATH
+        self.LOGS_DIR = LOGS_DIR
+        self.MODEL_SAVE_PATH = MODEL_SAVE_PATH
+        self.MODEL_LOGS_SAVE_PATH = MODEL_LOGS_SAVE_PATH
     
 
     def get_model(self):
@@ -72,17 +86,16 @@ class Train_neuralnet:
             generator_dataset = tf.data.Dataset.from_generator(
                 lambda: generator, output_signature)
         else:
-            dum_gen = lambda : None 
+            print("running dummy!")
+            # dum_gen = lambda : None 
+            def dum_gen():
+                for _ in range(10):
+                    yield (
+                        tf.constant([[0.0] * 3095], dtype=tf.float32),
+                        tf.constant([0], dtype=tf.int64)
+                    )
             val_generator_dataset = tf.data.Dataset.from_generator(dum_gen,output_signature=output_signature)
             generator_dataset = tf.data.Dataset.from_generator(dum_gen,output_signature=output_signature)
-
-        print("VAL_CACHE_PATH", self.VAL_CACHE_PATH)
-        print("TRAIN_CACHE_PATH", self.CACHE_PATH)
-        print(os.listdir(self.CACHE_PATH))
-
-        for i, e in enumerate(val_generator_dataset):
-            if i > 3: break
-            print(e)
 
         self.val_generator_dataset = val_generator_dataset.cache(self.VAL_CACHE_PATH + "/tf_cache.tfcache").shuffle(100)
 
@@ -91,9 +104,9 @@ class Train_neuralnet:
         self.generator_dataset = generator_dataset.prefetch(tf.data.AUTOTUNE)
         self.val_generator_dataset = val_generator_dataset.prefetch(tf.data.AUTOTUNE)
 
-    def callbacks(self, SAVE_INTERVAL = 2, LOGS_DIR = "data/logs"):
-        # steps_per_epoch = len(self.data_list)
+    def callbacks(self):
         steps_per_epoch = 10000
+        SAVE_INTERVAL = 2
     
         self.model_checkpoint_callback = tf.keras.callbacks.ModelCheckpoint(
            filepath=CHECKPOINT_PATH,
@@ -113,25 +126,34 @@ class Train_neuralnet:
                 validation_data=self.val_generator_dataset,
                 epochs=10,
                 callbacks=[
-                    self.tensorboard_callback, 
-                    self.model_checkpoint_callback, 
-                    CustomCallback(self.model_value),    
+                    # self.tensorboard_callback, 
+                    # self.model_checkpoint_callback, 
+                    CustomCallback(self.model_value, MODEL_SAVE_PATH, MODEL_LOGS_SAVE_PATH),    
                 ],
                 initial_epoch=0,
                 verbose=1,
                 
         )
         print("saving model")
-        self.model.save("./saved_model_new/model")
+        self.model.save(f"{self.MODEL_SAVE_PATH}model_{self.model_value}/")
 
 
 if __name__ == "__main__":
     BATCH_SIZE = 10
 
-    CHECKPOINT_PATH = "checkpoints/"
+    CHECKPOINT_PATH = "checkpoints/" # checkpoints, not used atm
+    LOGS_DIR = "data/logs/" # for tensorboard logs
+    MODEL_SAVE_PATH = "/results/model_saves/"
+    MODEL_LOGS_SAVE_PATH = "/results/model_logs/"
 
     # runtime = Main(val_data_list, data_list, val_data_dir, data_dir, BATCH_SIZE, CHECKPOINT_PATH)
-    runtime = Train_neuralnet(BATCH_SIZE=BATCH_SIZE, CHECKPOINT_PATH=CHECKPOINT_PATH)
+    runtime = Train_neuralnet(
+        BATCH_SIZE=BATCH_SIZE, 
+        CHECKPOINT_PATH=CHECKPOINT_PATH, 
+        LOGS_DIR=LOGS_DIR, 
+        MODEL_SAVE_PATH=MODEL_SAVE_PATH, 
+        MODEL_LOGS_SAVE_PATH=MODEL_LOGS_SAVE_PATH
+    )
     runtime.get_model()
     runtime.get_data()
     runtime.callbacks()

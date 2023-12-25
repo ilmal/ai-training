@@ -1,11 +1,12 @@
 version: '3'
 services:
   tensorflow-app:
+    image: rocm/tensorflow:latest
     build:
       context: .
-      dockerfile: Dockerfile
+      dockerfile: dockerFile
     volumes:
-      - ./src:/app
+      - ./train_src:/app
       - ./models:/models
       - ./results:/results
       - /mnt/AI_new/cache_back/_100batch:/data
@@ -15,11 +16,24 @@ services:
     working_dir: /app
     command: [ "python3", "train_neuralnet.py" ]
   tensorflow-app_no_gpu:
+    image: rocm/tensorflow:latest
+    build:
+      context: .
+      dockerfile: dockerFile
+    volumes:
+      - ./train_src:/app
+      - ./models:/models
+      - ./results:/results
+      - ./data:/data  
+    working_dir: /app
+    command: [ "python3", "train_neuralnet.py" ]
+  generate_new_model:
+    image: python:3
     build:
       context: .
       dockerfile: Dockerfile
     volumes:
-      - ./src:/app
+      - ./generate_model_src:/app
       - ./models:/models
       - ./results:/results
       - ./data:/data
