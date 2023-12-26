@@ -2,7 +2,6 @@ import os
 os.environ['TF_CPP_MAX_VLOG_LEVEL'] = "-1"
 
 import tensorflow as tf
-from IPython.display import clear_output
 
 # Module imports
 from modules.data_generator import data_generator
@@ -44,6 +43,7 @@ class Train_neuralnet:
                  LOGS_DIR=False,
                  MODEL_SAVE_PATH=False,
                  MODEL_LOGS_SAVE_PATH=False,
+                 MODEL_DATAFRAME_PATH=False,
 
         ):
         if not BATCH_SIZE or not CHECKPOINT_PATH or not LOGS_DIR:
@@ -59,6 +59,7 @@ class Train_neuralnet:
         self.LOGS_DIR = LOGS_DIR
         self.MODEL_SAVE_PATH = MODEL_SAVE_PATH
         self.MODEL_LOGS_SAVE_PATH = MODEL_LOGS_SAVE_PATH
+        self.MODEL_DATAFRAME_PATH = MODEL_DATAFRAME_PATH
     
 
     def get_model(self):
@@ -128,7 +129,7 @@ class Train_neuralnet:
                 callbacks=[
                     # self.tensorboard_callback, 
                     # self.model_checkpoint_callback, 
-                    CustomCallback(self.model_value, MODEL_SAVE_PATH, MODEL_LOGS_SAVE_PATH),    
+                    CustomCallback(self.model_value, self.MODEL_SAVE_PATH, self.MODEL_LOGS_SAVE_PATH, self.MODEL_DATAFRAME_PATH),    
                 ],
                 initial_epoch=0,
                 verbose=1,
@@ -145,6 +146,7 @@ if __name__ == "__main__":
     LOGS_DIR = "data/logs/" # for tensorboard logs
     MODEL_SAVE_PATH = "/results/model_saves/"
     MODEL_LOGS_SAVE_PATH = "/results/model_logs/"
+    MODEL_DATAFRAME_PATH = "/results/model_data.csv"
 
     # runtime = Main(val_data_list, data_list, val_data_dir, data_dir, BATCH_SIZE, CHECKPOINT_PATH)
     runtime = Train_neuralnet(
@@ -152,7 +154,8 @@ if __name__ == "__main__":
         CHECKPOINT_PATH=CHECKPOINT_PATH, 
         LOGS_DIR=LOGS_DIR, 
         MODEL_SAVE_PATH=MODEL_SAVE_PATH, 
-        MODEL_LOGS_SAVE_PATH=MODEL_LOGS_SAVE_PATH
+        MODEL_LOGS_SAVE_PATH=MODEL_LOGS_SAVE_PATH,
+        MODEL_DATAFRAME_PATH=MODEL_DATAFRAME_PATH,
     )
     runtime.get_model()
     runtime.get_data()

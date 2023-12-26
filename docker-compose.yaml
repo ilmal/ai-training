@@ -1,10 +1,9 @@
 version: '3'
 services:
   tensorflow-app:
-    image: rocm/tensorflow:latest
     build:
       context: .
-      dockerfile: dockerFile
+    image: rocm/tensorflow:latest
     volumes:
       - ./train_src:/app
       - ./models:/models
@@ -16,10 +15,10 @@ services:
     working_dir: /app
     command: [ "python3", "train_neuralnet.py" ]
   tensorflow-app_no_gpu:
-    image: rocm/tensorflow:latest
     build:
       context: .
-      dockerfile: dockerFile
+      dockerfile: Dockerfile
+    image: rocm/tensorflow:latest
     volumes:
       - ./train_src:/app
       - ./models:/models
@@ -36,7 +35,6 @@ services:
       - ./generate_model_src:/app
       - ./models:/models
       - ./results:/results
-      - ./data:/data
     working_dir: /app
-    command: [ "python3", "train_neuralnet.py" ]
+    command: [ "python3", "generate_model.py" ]
   
