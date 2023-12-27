@@ -44,21 +44,31 @@ def import_function(module_name, function_name):
 
 
 def get_model():
-    models = get_models_list()
-    completed_models = check_completed_models(models)
+    models = [int(e) for e in get_models_list()]
+    completed_models = [int(e) for e in check_completed_models(models)]
 
-    print(models)
-    print(completed_models)
+    # print(models)
+    # print(completed_models)
 
-    if len(models) == len(completed_models): return False
+    if len(models) == len(completed_models): raise Exception("NO MODEL TO TRAIN")
     
     difference = list(set(models) - set(completed_models))
-    
-    if not len(difference) > 0: return False
 
-    model_function = import_function(f"model_{difference[0]}.py", "model")
+    print(difference)
 
-    return difference[0], model_function()
+    difference_str =  []
+    for e in difference:
+        if e < 10:
+            e = "0"+str(e)
+        else:
+            e = str(e)
+        difference_str.append(e)
+
+    if not len(difference) > 0: raise Exception("NO MODEL TO TRAIN")
+
+    model_function = import_function(f"model_{difference_str[0]}.py", "model")
+
+    return difference_str[0], model_function()
 
     
 

@@ -3,6 +3,7 @@ services:
   tensorflow-app:
     build:
       context: .
+      dockerfile: Dockerfile
     image: rocm/tensorflow:latest
     volumes:
       - ./train_src:/app
@@ -23,7 +24,7 @@ services:
       - ./train_src:/app
       - ./models:/models
       - ./results:/results
-      - ./data:/data  
+      - ./data:/data
     working_dir: /app
     command: [ "python3", "train_neuralnet.py" ]
   generate_new_model:
@@ -37,4 +38,3 @@ services:
       - ./results:/results
     working_dir: /app
     command: [ "python3", "generate_model.py" ]
-  
