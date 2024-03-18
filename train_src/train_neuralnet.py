@@ -88,13 +88,13 @@ class Train_neuralnet:
                 lambda: generator, output_signature)
         else:
             print("running dummy!")
-            # dum_gen = lambda : None 
-            def dum_gen():
-                for _ in range(10):
-                    yield (
-                        tf.constant([[0.0] * 3095], dtype=tf.float32),
-                        tf.constant([0], dtype=tf.int64)
-                    )
+            dum_gen = lambda : None 
+            # def dum_gen():
+            #     for _ in range(100):
+            #         yield (
+            #             tf.constant([[0.0] * 3095], dtype=tf.float32),
+            #             tf.constant([0], dtype=tf.int64)
+            #         )
             val_generator_dataset = tf.data.Dataset.from_generator(dum_gen,output_signature=output_signature)
             generator_dataset = tf.data.Dataset.from_generator(dum_gen,output_signature=output_signature)
 
@@ -102,8 +102,8 @@ class Train_neuralnet:
 
         self.generator_dataset = generator_dataset.cache(self.CACHE_PATH + "/tf_cache.tfcache").shuffle(100)
 
-        self.generator_dataset = generator_dataset.prefetch(tf.data.AUTOTUNE)
-        self.val_generator_dataset = val_generator_dataset.prefetch(tf.data.AUTOTUNE)
+        # self.generator_dataset = generator_dataset.prefetch(tf.data.AUTOTUNE)
+        # self.val_generator_dataset = val_generator_dataset.prefetch(tf.data.AUTOTUNE)
 
     def callbacks(self):
         steps_per_epoch = 10000
@@ -125,7 +125,7 @@ class Train_neuralnet:
 
         self.model.fit(self.generator_dataset,
                 validation_data=self.val_generator_dataset,
-                epochs=10,
+                epochs=50,
                 callbacks=[
                     # self.tensorboard_callback, 
                     # self.model_checkpoint_callback, 
@@ -140,7 +140,7 @@ class Train_neuralnet:
 
 
 if __name__ == "__main__":
-    BATCH_SIZE = 10
+    BATCH_SIZE = 10000
 
     CHECKPOINT_PATH = "checkpoints/" # checkpoints, not used atm
     LOGS_DIR = "data/logs/" # for tensorboard logs
