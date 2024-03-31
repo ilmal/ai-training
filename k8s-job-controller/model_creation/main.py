@@ -10,11 +10,13 @@ If there are modeles that are ready for training and free resources start the tr
 
 """
 
+MODEL_DIR = ""
+RESULT_DIR = ""
+NUMBER_OF_MODELS = 3
+
 def main():
 
-    MODEL_DIR = ""
-    RESULT_DIR = ""
-    NUMBER_OF_MODELS = 3
+    
 
     # Check for new model files
     

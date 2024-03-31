@@ -140,7 +140,7 @@ class Train_neuralnet:
 
 
 if __name__ == "__main__":
-    BATCH_SIZE = 10000
+    BATCH_SIZE = 100
 
     CHECKPOINT_PATH = "checkpoints/" # checkpoints, not used atm
     LOGS_DIR = "data/logs/" # for tensorboard logs
@@ -149,13 +149,13 @@ if __name__ == "__main__":
     MODEL_DATAFRAME_PATH = "/results/model_data.csv"
 
     # runtime = Main(val_data_list, data_list, val_data_dir, data_dir, BATCH_SIZE, CHECKPOINT_PATH)
-    runtime = Train_neuralnet(
+    runtime = Train_neuralnet( 
         BATCH_SIZE=BATCH_SIZE, 
         CHECKPOINT_PATH=CHECKPOINT_PATH, 
         LOGS_DIR=LOGS_DIR, 
         MODEL_SAVE_PATH=MODEL_SAVE_PATH, 
-        MODEL_LOGS_SAVE_PATH=MODEL_LOGS_SAVE_PATH,
-        MODEL_DATAFRAME_PATH=MODEL_DATAFRAME_PATH,
+        MODEL_LOGS_SAVE_PATH=MODEL_LOGS_SAVE_PATH, 
+        MODEL_DATAFRAME_PATH=MODEL_DATAFRAME_PATH, 
     )
     runtime.get_model()
     runtime.get_data()
