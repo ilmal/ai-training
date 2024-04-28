@@ -47,9 +47,6 @@ def get_model():
     models = [int(e) for e in get_models_list()]
     completed_models = [int(e) for e in check_completed_models(models)]
 
-    # print(models)
-    # print(completed_models)
-
     if len(models) == len(completed_models): raise Exception("NO MODEL TO TRAIN")
     
     difference = list(set(models) - set(completed_models))
@@ -66,7 +63,10 @@ def get_model():
 
     if not len(difference) > 0: raise Exception("NO MODEL TO TRAIN")
 
-    model_function = import_function(f"model_{difference_str[0]}.py", "model")
+    try:
+        model_function = import_function(f"model_{difference_str[0]}.py", "model")
+    except Exception as e:
+        raise(f"Error reading model from file: model_{difference_str[0]}.py | with err: {e}")
 
     return difference_str[0], model_function()
 
