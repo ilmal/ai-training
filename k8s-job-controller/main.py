@@ -11,6 +11,10 @@ If there are modeles that are ready for training and free resources start the tr
 
 """
 
+# MODEL_DIR = os.environ["MODEL_DIR"]
+# RESULT_DIR = os.environ["RESULT_DIR"]
+# NUMBER_OF_MODELS = os.environ["NUMBER_OF_MODELS"]
+
 def main():
 
     MODEL_DIR = "../models/" # This is the directory where the model code are stored

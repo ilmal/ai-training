@@ -19,5 +19,8 @@ GeminiClient = Gemini(auto_cookies=True)
 
 # GeminiClient = Gemini(auto_cookies=True, target_cookies = ["__Secure-1PSIDCC", " __Secure-1PSID", "__Secure-1PSIDTS", "NID"]) 
 
-response = GeminiClient.generate_content("Hello, Gemini. What's the weather like in Seoul today?")
-print(response.payload)
+response_text, response_status = GeminiClient.send_request("Hello, Gemini. What's the weather like in Seoul today?")
+print(response_text)
+
+# gemini_key = "AIzaSyASR8M2T-dwePQ7BOxCQmrz9xOG6F6g9Kg"
+
