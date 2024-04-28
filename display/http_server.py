@@ -1,39 +1,27 @@
-import http.server
-import socketserver
-from os import path
+from flask import Flask, jsonify
+import subprocess
 
-html_folder_path = './'
-home_page_file_path = 'index.html'
+app = Flask(__name__)
 
+@app.route('/date', methods=['GET'])
+def get_date():
+    result = subprocess.check_output(['date']).decode('utf-8')
+    return jsonify({'date': result.strip()})
 
-class MyHttpRequestHandler(http.server.SimpleHTTPRequestHandler):
+@app.route('/cal', methods=['GET'])
+def get_cal():
+    result = subprocess.check_output(['cal']).decode('utf-8')
+    return jsonify({'calendar': result.strip()})
 
-    def _set_headers(self):
-        self.send_response(200)
-        self.send_header('Content-Type', 'text/html')
-        self.send_header('Content-Length', path.getsize(self.getPath()))
-        self.end_headers()
+@app.route('/docker', methods=['GET'])
+def get_docker():
+    result = subprocess.check_output(['docker', 'ps']).decode('utf-8')
+    return jsonify({'docker': result.strip()})
 
-    def getPath(self):
-        if self.path == '/':
-            content_path = path.join(
-                html_folder_path, home_page_file_path)
-        else:
-            content_path = path.join(html_folder_path, str(self.path).split('?')[0][1:])
-        return content_path
+@app.route('/cls', methods=['GET'])
+def get_cls():
+    result = subprocess.check_output(['cls']).decode('utf-8')
+    return jsonify({'cls': result.strip()})
 
-    def getContent(self, content_path):
-        with open(content_path, mode='r', encoding='utf-8') as f:
-            content = f.read()
-        return bytes(content, 'utf-8')
-
-    def do_GET(self):
-        self._set_headers()
-        self.wfile.write(self.getContent(self.getPath()))
-
-
-my_handler = MyHttpRequestHandler
-
-with socketserver.TCPServer(("", 9000), my_handler) as httpd:
-    print("Http Server Serving at port", 9000)
-    httpd.serve_forever()
+if __name__ == '__main__':
+    app.run(host="0.0.0.0", port="9001")
