@@ -1,0 +1,15 @@
+FROM tensorflow/tensorflow:latest
+
+ENV TF_CPP_MAX_VLOG_LEVEL="-1"
+
+WORKDIR /app
+
+COPY . /app
+
+RUN pip install --no-cache-dir -r requirements.txt
+
+RUN pip install tensorflow pandas
+
+# Define any runtime arguments, like model paths, etc. (if needed)
+
+CMD ["python", "train_neuralnet.py"]
