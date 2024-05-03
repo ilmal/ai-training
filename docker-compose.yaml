@@ -38,3 +38,14 @@ services:
       - ./results:/results
     working_dir: /app
     command: [ "python3", "generate_model.py" ]
+  display_app:
+    build: 
+      context: ./display
+      dockerfile: dockerfile
+    environment:
+      - MODELS_DIR='/models'
+      - RESULTS_DIR='/results'
+      - NODES='["tcp://localhost:2375", "tcp://127.0.0.1:2375"]'
+    volumes:
+      - ./models:/models
+      - ./results:/results

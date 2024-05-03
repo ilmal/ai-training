@@ -10,6 +10,8 @@
     display: grid;
     grid-template-columns: 10% 80% 10%;
     grid-template-rows: 15vh auto;
+    row-gap: 5vh;
+    margin-bottom: 20vh;
 
     .header{
         grid-column: 2/3;
@@ -20,5 +22,58 @@
         h1{
 
         }   
+    }
+
+    .jobs{
+        grid-column: 2/3;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        gap: 5vh;
+        .jobList{
+            display: flex;
+            flex-direction: column;
+            gap: 5vh;
+            .job{
+                min-height: 10vh;
+                width: 60vw;
+                padding: 3vh 5vw;
+    
+                background-color: #f0f0f0;
+
+                display: flex;
+                flex-direction: column;
+                gap: 5vh;
+
+                h3{
+                    text-align: center;
+                }
+
+                .info{
+                    display: flex;
+                    flex-direction: column;
+                    justify-content: space-between;
+                    gap: 5vw;
+
+                    div{
+                        background: #DFDFDF;
+                        pre{
+                            padding: 1vh 1vw;
+                            white-space: pre-wrap;
+                            tab-size: 4;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    .runningJobs{
+        grid-row: 2/3;
+    }
+
+    .pastJobs{
+        grid-row: 3/4;
     }
 }

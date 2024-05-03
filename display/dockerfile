@@ -1,0 +1,23 @@
+FROM node:12.18.0-alpine as build
+
+WORKDIR /app/react_frontend
+COPY ./ai-display/package.json ./
+COPY ./ai-display/package-lock.json ./
+
+RUN npm i
+COPY ./ai-display ./
+RUN npm run build
+
+RUN npm install -g serve
+# RUN serve -s build
+
+# PYTHON stuff and things
+FROM python:3.6.9-slim-buster
+
+WORKDIR /app/backend
+
+COPY ./http_server.py ./
+
+RUN pip3 install docker pandas flask_cors flask
+
+CMD python3 http_server.py
