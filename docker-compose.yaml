@@ -1,5 +1,20 @@
 version: '3'
 services:
+  tensorflow-app_amd:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: rocm/tensorflow:latest
+    volumes:
+      - ./train_src:/app
+      - /mnt/model_data/models:/models
+      - /mnt/model_data/results:/results
+      - /mnt/AI_new/cache_back/_100batch:/data
+    devices:
+      - /dev/dri
+      - /dev/kfd
+    working_dir: /app
+    command: [ "python3", "train_neuralnet.py" ]
   tensorflow-app:
     build:
       context: .
@@ -7,24 +22,9 @@ services:
     image: rocm/tensorflow:latest
     volumes:
       - ./train_src:/app
-      - ./models:/models
-      - ./results:/results
-      - /mnt/AI_new/cache_back/_100batch:/data
-    devices:
-      - /dev/dri
-      - /dev/kfd
-    working_dir: /app
-    command: [ "python3", "train_neuralnet.py" ]
-  tensorflow-app_no_gpu:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    image: rocm/tensorflow:latest
-    volumes:
-      - ./train_src:/app
-      - ./models:/models
-      - ./results:/results
-      - ./data:/data
+      - /mnt/model_data/models:/models
+      - /mnt/model_data/results:/results
+      - /home/nils/data/cache_back/_100batch:/data
     working_dir: /app
     command: [ "python3", "train_neuralnet.py" ]
   generate_new_model:
@@ -34,8 +34,8 @@ services:
       dockerfile: Dockerfile
     volumes:
       - ./generate_model_src:/app
-      - ./models:/models
-      - ./results:/results
+      - /mnt/model_data/models:/models
+      - /mnt/model_data/results:/results
     working_dir: /app
     command: [ "python3", "generate_model.py" ]
   display_app:
@@ -45,7 +45,7 @@ services:
     environment:
       - MODELS_DIR='/models'
       - RESULTS_DIR='/results'
-      - NODES='["tcp://localhost:2375", "tcp://127.0.0.1:2375"]'
+      - NODES="['tcp://localhost:2375', 'tcp://127.0.0.1:2375']"
     volumes:
-      - ./models:/models
-      - ./results:/results
+      - /mnt/model_data/models:/models
+      - /mnt/model_data/results:/results
