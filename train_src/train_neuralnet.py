@@ -109,16 +109,16 @@ class Train_neuralnet:
         steps_per_epoch = 10000
         SAVE_INTERVAL = 2
     
-        self.model_checkpoint_callback = tf.keras.callbacks.ModelCheckpoint(
-           filepath=CHECKPOINT_PATH,
-           save_weights_only=False,
-           save_freq=int(steps_per_epoch * SAVE_INTERVAL))
+        #self.model_checkpoint_callback = tf.keras.callbacks.ModelCheckpoint(
+        #   filepath=CHECKPOINT_PATH,
+        #   save_weights_only=False,
+        #   save_freq=int(steps_per_epoch * SAVE_INTERVAL))
 
-        self.tensorboard_callback = tf.keras.callbacks.TensorBoard( 
-            log_dir=(LOGS_DIR),
-            histogram_freq=1, 
-            write_steps_per_second=True
-        )
+        #self.tensorboard_callback = tf.keras.callbacks.TensorBoard( 
+        #    log_dir=(LOGS_DIR),
+        #    histogram_freq=1, 
+        #    write_steps_per_second=True
+        #)
 
     def train(self):
         self.model.summary()
@@ -129,7 +129,7 @@ class Train_neuralnet:
                 callbacks=[
                     # self.tensorboard_callback, 
                     # self.model_checkpoint_callback, 
-                    CustomCallback(self.model_value, self.MODEL_SAVE_PATH, self.MODEL_LOGS_SAVE_PATH, self.MODEL_DATAFRAME_PATH),    
+                    #CustomCallback(self.model_value, self.MODEL_SAVE_PATH, self.MODEL_LOGS_SAVE_PATH, self.MODEL_DATAFRAME_PATH),    
                 ],
                 initial_epoch=0,
                 verbose=1,

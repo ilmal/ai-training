@@ -15,11 +15,17 @@ services:
       - /dev/kfd
     working_dir: /app
     command: [ "python3", "train_neuralnet.py" ]
-  tensorflow-app:
+  tensorflow-app_nvidia:
     build:
       context: .
-      dockerfile: Dockerfile
-    image: rocm/tensorflow:latest
+      dockerfile: dockerfile-nvidia
+    deploy:
+      resources:
+        reservations:
+          devices:
+          - driver: nvidia
+            count: all
+            capabilities: [gpu]    
     volumes:
       - ./train_src:/app
       - /mnt/model_data/models:/models
