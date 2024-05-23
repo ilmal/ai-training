@@ -42,7 +42,7 @@ def main():
         return
 
     # Start training process
-    start_training(IMAGE_NAME, trainable_models[0])
+    start_training()
 
     pass
 

@@ -1,6 +1,7 @@
 # sudo docker-compose up
 
-sudo docker-compose run tensorflow-app
+sudo docker-compose build controller
+sudo docker-compose run controller
 
 
 

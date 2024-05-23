@@ -25,7 +25,9 @@ services:
           devices:
           - driver: nvidia
             count: all
-            capabilities: [gpu]    
+            capabilities: [gpu]  
+    environment:
+      - NODES="['tcp://localhost:2375', 'tcp://127.0.0.1:2375']"  
     volumes:
       - ./train_src:/app
       - /mnt/model_data/models:/models
@@ -55,3 +57,19 @@ services:
     volumes:
       - /mnt/model_data/models:/models
       - /mnt/model_data/results:/results
+  controller:
+    build:
+      context: ./controller
+      dockerfile: dockerfile
+    environment:
+      - NODES=["192.168.1.180"]
+      - NODE_PASS=["pass123"]
+      - MODELS_DIR='/models'
+      - RESULTS_DIR='/results'
+      - NUMBER_OF_MODELS=3
+      - CONCURRENT_JOBS=1
+      - IMAGE_NAME='ai-training'
+    volumes:
+      - ./models:/models
+      - ./results:/results
+
